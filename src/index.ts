@@ -7,6 +7,7 @@ import compression from "compression"
 import { dbConnect, syncDB } from './config/db';
 import { errorHandler } from './middlewares/errorHandler';
 import { authRouter } from './routes/authRoutes';
+import { userRouter } from './routes/userRoutes';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use(errorHandler)
 
 
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/user', userRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });
