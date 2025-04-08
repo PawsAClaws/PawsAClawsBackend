@@ -8,6 +8,7 @@ import { dbConnect, syncDB } from './config/db';
 import { errorHandler } from './middlewares/errorHandler';
 import { authRouter } from './routes/authRoutes';
 import { userRouter } from './routes/userRoutes';
+import { categoryRouter } from './routes/categoryRoutes';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use(errorHandler)
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/user', userRouter)
+app.use('/api/v1/category', categoryRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });
