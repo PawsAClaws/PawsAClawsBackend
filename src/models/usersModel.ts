@@ -10,6 +10,7 @@ interface UserAttributes {
     gender: 'male' | 'female';
     birthday: Date;
     phone: string;
+    location: string;
     role?: 'user' | 'admin';
     photo?: string;
     createdAt?: Date;
@@ -25,6 +26,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
     public gender!: 'male' | 'female';
     public birthday!: Date;
     public phone!: string;
+    public location!: string;
     public role!: 'user' | 'admin';
     public photo!: string;
     public readonly createdAt!: Date;
@@ -63,6 +65,10 @@ User.init({
         allowNull: false,
     },
     phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    location: {
         type: DataTypes.STRING,
         allowNull: false,
     },

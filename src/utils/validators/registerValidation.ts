@@ -29,5 +29,8 @@ export const registerValidation = [
     .withMessage("Invalid birthday format"),
     body("phone")
     .notEmpty()
-    .withMessage("Phone is required")
+    .withMessage("Phone is required"),
+    body("location")
+    .notEmpty()
+    .withMessage("Location is required"),
 ]

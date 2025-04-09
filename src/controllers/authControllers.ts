@@ -23,7 +23,7 @@ export const login = async(req:Request, res:Response) => {
                 })
             }
             else{
-                const token = jwt.sign({id: user.id, email: user.email, role:user.role}, process.env.JWT_SECRET as string, {expiresIn: "1d"})
+                const token = jwt.sign({id: user.id, email: user.email, role:user.role, location:user.location}, process.env.JWT_SECRET as string, {expiresIn: "1d"})
                 res.status(200).json({
                     status: "success",
                     message: "login success",
@@ -43,7 +43,7 @@ export const login = async(req:Request, res:Response) => {
 
 export const register = async(req:Request, res:Response) => {
     try {
-        const {firstName, lastName, email, password, gender, birthday, phone} = req.body
+        const {firstName, lastName, email, password, gender, birthday, phone, location} = req.body
         const user = await User.findOne({where:{email}})
         if(user){
             res.status(400).json({
@@ -61,6 +61,7 @@ export const register = async(req:Request, res:Response) => {
                 gender,
                 birthday,
                 phone,
+                location
             })
             await newUser.save()
             res.status(201).json({
