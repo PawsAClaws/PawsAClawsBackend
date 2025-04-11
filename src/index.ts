@@ -10,12 +10,15 @@ import { authRouter } from './routes/authRoutes';
 import { userRouter } from './routes/userRoutes';
 import { categoryRouter } from './routes/categoryRoutes';
 import { postsRouter } from './routes/postsRoutes';
+import { wishlistRouter } from './routes/wishlistRoutes';
+import { redisDB } from './config/redisClient';
 
 dotenv.config();
 
 const app = express();
 dbConnect()
 syncDB()
+redisDB()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,6 +37,7 @@ app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/user', userRouter)
 app.use('/api/v1/category', categoryRouter)
 app.use('/api/v1/post', postsRouter)
+app.use('/api/v1/wishlist', wishlistRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });

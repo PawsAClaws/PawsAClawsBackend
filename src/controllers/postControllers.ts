@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Post from "../models/postsModel";
 import { pagination } from "../middlewares/pagination";
 import User from "../models/usersModel";
+import { Op } from "sequelize";
+import { redisClient } from "../config/redisClient";
 
 export const getPosts = async(req:Request, res:Response) => {
     try {
@@ -9,24 +11,52 @@ export const getPosts = async(req:Request, res:Response) => {
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
+        const q = (req.query.q)?.toString() || "";
         const type = (req.query.type)?.toString() || "sale";
-        const {count,rows} = await Post.findAndCountAll({
-            where: {
-                type: type,
-                country: location,
-            },
-            order: [["createdAt", "DESC"]],
-            limit: +limit,
-            offset: offset,
-        });
-        const pagin = pagination(+limit, +page, count);
-        res.status(200).json({
-            status: "success",
-            data: {
-                posts: rows,
-                pagination: pagin,
-            },
-        });
+        const sortBy = (req.query.sortBy)?.toString() || "DESC";
+        const key = `${location}:${type}:${q}:${page}:${limit}:${sortBy}`;
+        const cache = await redisClient.get(key);
+        if (cache) {
+            console.log("cache");
+            res.status(200).json({
+                status: "success",
+                data: JSON.parse(cache),
+            });
+        }
+        else{
+            const {count,rows} = await Post.findAndCountAll({
+                where: {
+                    type: type,
+                    country: location,
+                    [Op.or]: [
+                        {
+                            title: {
+                                [Op.like]: `%${q}%`,
+                            },
+                        },
+                        {
+                            description: {
+                                [Op.like]: `%${q}%`,
+                            },
+                        },
+                    ]
+                },
+                order: [["createdAt", sortBy]],
+                limit: +limit,
+                offset: offset,
+            });
+            const pagin = pagination(+limit, +page, count);
+            await redisClient.set(key, JSON.stringify({posts: rows, pagination: pagin}), {
+                EX: 180,
+            });
+            res.status(200).json({
+                status: "success",
+                data: {
+                    posts: rows,
+                    pagination: pagin,
+                },
+            });
+        }
     } catch (error:any) {
         res.status(404).json({
             status: "error",
