@@ -17,7 +17,7 @@ export const getPosts = async(req:Request, res:Response) => {
         const key = `${location}:${type}:${q}:${page}:${limit}:${sortBy}`;
         const cache = await redisClient.get(key);
         if (cache) {
-            console.log("cache");
+            // console.log("cache");
             res.status(200).json({
                 status: "success",
                 data: JSON.parse(cache),
