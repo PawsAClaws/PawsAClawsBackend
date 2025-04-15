@@ -7,7 +7,7 @@ import { redisClient } from "../config/redisClient";
 
 export const getPosts = async(req:Request, res:Response) => {
     try {
-        const { location } = (req as any).user;
+        const location = req.query.location || "";
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
@@ -27,7 +27,9 @@ export const getPosts = async(req:Request, res:Response) => {
             const {count,rows} = await Post.findAndCountAll({
                 where: {
                     type: type,
-                    country: location,
+                    country: {
+                        [Op.like]: `%${location}%`,
+                    },
                     [Op.or]: [
                         {
                             title: {

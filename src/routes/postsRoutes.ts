@@ -8,7 +8,7 @@ import { createPost, deletePost, getPost, getPosts, updatePost } from "../contro
 export const postsRouter = express.Router();
 
 postsRouter.route("/")
-.get(verifyToken,getPosts)
+.get(getPosts)
 .post(verifyToken,upload.single("photo"),uploadFile,postValidation,errorValidation,createPost)
 
 postsRouter.route("/:id")
