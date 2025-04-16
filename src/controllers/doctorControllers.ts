@@ -7,7 +7,7 @@ import User from "../models/usersModel";
 
 export const getAllDoctors = async (req: Request, res: Response) => {
     try {
-        const { location } = (req as any).user;
+        const location = req.query.location || "";
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
@@ -45,7 +45,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
                     ],
                     [Op.and]: [
                         where(col('user.location'), {
-                            [Op.like]: `${location}`
+                            [Op.like]: `%${location}%`
                         }),
                     ]
                 },
@@ -56,7 +56,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
             await redisClient.set(key,JSON.stringify({
                 doctors:rows,
                 pagination: pagin
-            }));
+            }),{EX:180});
             res.status(200).json({
                 status: "success",
                 data: {

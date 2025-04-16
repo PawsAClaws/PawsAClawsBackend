@@ -7,7 +7,7 @@ import { doctorValidation } from '../utils/validators/doctorValidation';
 export const doctorRouter = express.Router();
 
 doctorRouter.route('/')
-.get(verifyToken,getAllDoctors)
+.get(getAllDoctors)
 .post(verifyToken,doctorValidation,errorValidation,createDoctor);
 
 doctorRouter.route('/mine')
