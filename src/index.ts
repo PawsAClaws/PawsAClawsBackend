@@ -13,6 +13,8 @@ import { postsRouter } from './routes/postsRoutes';
 import { wishlistRouter } from './routes/wishlistRoutes';
 import { redisDB } from './config/redisClient';
 import { doctorRouter } from './routes/doctorRoutes';
+import { appointmentRouter } from './routes/appointmentRoutes';
+import { reviewsRouter } from './routes/reviewsRoutes';
 
 dotenv.config();
 
@@ -40,6 +42,8 @@ app.use('/api/v1/category', categoryRouter)
 app.use('/api/v1/post', postsRouter)
 app.use('/api/v1/wishlist', wishlistRouter)
 app.use('/api/v1/doctor', doctorRouter)
+app.use('/api/v1/appointment', appointmentRouter)
+app.use('/api/v1/review', reviewsRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });
