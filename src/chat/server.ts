@@ -39,5 +39,6 @@ io.on("connection", async(socket) => {
     socket.on("disconnect", () => {
         onlineUsers.delete(user.id);
         io.emit("onlineUsers",Array.from(onlineUsers));
+        console.log("disconnect user => "+ user.id);
     });
 })
