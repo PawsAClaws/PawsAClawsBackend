@@ -4,6 +4,8 @@ import Doctor from "../models/doctorModel";
 import { redisClient } from "../config/redisClient";
 import { pagination } from "../middlewares/pagination";
 import User from "../models/usersModel";
+import { sendNotification } from "../helpers/sendNotification";
+import { sendEmail } from "../utils/sendEmail";
 
 export const createAppointment = async (req: Request, res: Response) => {
     try {
@@ -153,6 +155,10 @@ export const updateAppointment = async (req: Request, res: Response) => {
         } else {
             await appointment.update(req.body);
             await appointment.save();
+            const user = await User.findByPk(appointment.userId);
+            const message = `The Doctor ${appointment.status} your appointment`;
+            await sendEmail(user?.email as string,message,user?.firstName as string,"appointment updated");
+            await sendNotification(message,appointment.userId);
             res.status(200).json({
                 status: "success",
                 data: appointment,

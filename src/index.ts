@@ -15,10 +15,12 @@ import { redisDB } from './config/redisClient';
 import { doctorRouter } from './routes/doctorRoutes';
 import { appointmentRouter } from './routes/appointmentRoutes';
 import { reviewsRouter } from './routes/reviewsRoutes';
+import { app, server } from './chat/server';
+import { notificationRouter } from './routes/notificationRoutes';
 
 dotenv.config();
 
-const app = express();
+// const app = express();
 dbConnect()
 syncDB()
 redisDB()
@@ -44,11 +46,12 @@ app.use('/api/v1/wishlist', wishlistRouter)
 app.use('/api/v1/doctor', doctorRouter)
 app.use('/api/v1/appointment', appointmentRouter)
 app.use('/api/v1/review', reviewsRouter)
+app.use('/api/v1/notification', notificationRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });
 });
 
-app.listen(process.env.PORT,()=>{
+server.listen(process.env.PORT,()=>{
     console.log(`server is running on port http://localhost:${process.env.PORT}`)
 })
