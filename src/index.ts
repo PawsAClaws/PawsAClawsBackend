@@ -17,6 +17,7 @@ import { appointmentRouter } from './routes/appointmentRoutes';
 import { reviewsRouter } from './routes/reviewsRoutes';
 import { app, server } from './chat/server';
 import { notificationRouter } from './routes/notificationRoutes';
+import { chatRouter } from './routes/chatRoutes';
 
 dotenv.config();
 
@@ -27,11 +28,16 @@ redisDB()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+    origin:process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(compression())
 app.use(helmet({xFrameOptions: { action: "deny" }}));
 app.use(rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: 5 * 60 * 1000,
     max: 100,
     message: 'Too many requests from this IP, please try again later.'
 }));
@@ -47,6 +53,7 @@ app.use('/api/v1/doctor', doctorRouter)
 app.use('/api/v1/appointment', appointmentRouter)
 app.use('/api/v1/review', reviewsRouter)
 app.use('/api/v1/notification', notificationRouter)
+app.use('/api/v1/chat', chatRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });

@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import Conversation from "../models/conversationModel";
 import { Op } from "sequelize";
 import Message from "../models/messagesModel";
+import { sendNotification } from "../helpers/sendNotification";
 
 dotenv.config();
 
@@ -15,9 +16,10 @@ export const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: process.env.FRONTEND_URL || "http://localhost:5173",
         methods: ["GET", "POST","PUT", "DELETE"],
         credentials: true,
+        allowedHeaders: ["Content-Type", "Authorization"],
     },
 });
 
@@ -70,17 +72,41 @@ io.on("connection", async(socket) => {
                 io.to(data.senderId).emit("newMessage",message);
                 io.to(data.receiverId).emit("newMessage",message);
             }
+            const notification = `${user.name} sent you a message`;
+            await sendNotification(notification,data.receiverId);
         } catch (error: any) {
             console.log(error.message);
         }
     })
 
-    socket.on("typing",(id)=>{
-        io.to(id).emit("typing",id);
+    socket.on("seen",async(data)=>{
+        const conversation = await Conversation.findOne({
+            where:{
+                senderId:{
+                    [Op.or]:[user.id,data.receiverId]
+                },
+                receiverId:{
+                    [Op.or]:[user.id,data.receiverId]
+                }
+            }
+        })
+        if(conversation){
+            await Message.update({seen:true},{
+                where:{
+                    conversationId:conversation.id,
+                    sendBy:data.receiverId
+                }
+            })
+            io.to(data.receiverId).emit("seen");
+        }
     })
 
-    socket.on("stopTyping",(id)=>{
-        io.to(id).emit("stopTyping",id);
+    socket.on("typing",(data)=>{
+        io.to(data.receiverId).emit("typing",data.receiverId);
+    })
+
+    socket.on("stopTyping",(data)=>{
+        io.to(data.receiverId).emit("stopTyping",data.receiverId);
     })
 
     socket.on("disconnect", () => {

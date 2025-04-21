@@ -7,6 +7,7 @@ interface messagesType {
     id?: number;
     message?: string;
     media?: string;
+    seen?: boolean;
     sendBy: number;
     conversationId: number;
     createAt?: Date;
@@ -36,6 +37,11 @@ Message.init({
     media: {
         type: DataTypes.TEXT,
         allowNull: true,
+    },
+    seen: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
     },
     sendBy: {
         type: DataTypes.INTEGER,
