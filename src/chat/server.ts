@@ -3,6 +3,9 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { getUserByToken } from "../helpers/getUserByToken";
 import dotenv from "dotenv";
+import Conversation from "../models/conversationModel";
+import { Op } from "sequelize";
+import Message from "../models/messagesModel";
 
 dotenv.config();
 
@@ -27,6 +30,50 @@ io.on("connection", async(socket) => {
     console.log("connect user => "+ user.id);
     // online users
     io.emit("onlineUsers",Array.from(onlineUsers));
+
+    socket.on("newMessage",async(data)=>{
+        try {
+            const conversation = await Conversation.findOne({
+                where:{
+                    senderId:{
+                        [Op.or]:[data.senderId,data.receiverId]
+                    },
+                    receiverId:{
+                        [Op.or]:[data.senderId,data.receiverId]
+                    }
+                }
+            })
+            if(conversation){
+                const message = await Message.create({
+                    message:data.message,
+                    media:data.media || null,
+                    sendBy:data.senderId,
+                    conversationId:conversation.id
+                })
+                await message.save();
+                io.to(data.senderId).emit("newMessage",message);
+                io.to(data.receiverId).emit("newMessage",message);
+            }
+            else{
+                const conversation = await Conversation.create({
+                    senderId:data.senderId,
+                    receiverId:data.receiverId
+                })
+                await conversation.save();
+                const message = await Message.create({
+                    message:data.message,
+                    media:data.media || null,
+                    sendBy:data.senderId,
+                    conversationId:conversation.id
+                })
+                await message.save();
+                io.to(data.senderId).emit("newMessage",message);
+                io.to(data.receiverId).emit("newMessage",message);
+            }
+        } catch (error: any) {
+            console.log(error.message);
+        }
+    })
 
     socket.on("typing",(id)=>{
         io.to(id).emit("typing",id);
