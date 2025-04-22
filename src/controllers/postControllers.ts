@@ -67,6 +67,26 @@ export const getPosts = async(req:Request, res:Response) => {
     }
 };
 
+export const getMyPosts = async(req:Request, res:Response) => {
+    try {
+        const userId = (req as any).user.id;
+        const posts = await Post.findAll({
+            where: {
+                userId: userId,
+            },
+        });
+        res.status(200).json({
+            status: "success",
+            data: posts,
+        });
+    } catch (error:any) {
+        res.status(404).json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
+
 export const createPost = async(req:Request, res:Response) => {
     try {
         const userId = (req as any).user.id;

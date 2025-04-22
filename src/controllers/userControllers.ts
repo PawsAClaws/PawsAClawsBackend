@@ -25,6 +25,29 @@ export const getUser = async (req: Request, res: Response) => {
     }
 }
 
+export const getUserById = async (req: Request, res: Response) => {
+    try {
+        const user = await User.findByPk(req.params.id,{attributes: {exclude: ['password']}});
+        if(!user){
+            res.status(404).json({
+                status: "error",
+                message: "user not found"
+            })
+        }
+        else{
+            res.status(200).json({
+                status: "success",
+                data: user
+            })
+        }
+    } catch (error: any) {
+        res.status(404).json({
+            status: "error",
+            message: error.message
+        })
+    }
+}
+
 export const updateUser = async (req: Request, res: Response) => {
     try {
         const id = (req as any).user.id;

@@ -4,7 +4,7 @@ import User from "./usersModel";
 import Doctor from "./doctorModel";
 
 interface reviewsTypes{
-    id?: number,
+    id?: string,
     rating: number,
     comment: string,
     userId: number,
@@ -14,7 +14,7 @@ interface reviewsTypes{
 }
 
 class Review extends Model<reviewsTypes>{
-    public readonly id!: number;
+    public readonly id!: string;
     public rating!: number;
     public comment!: string;
     public userId!: number;
@@ -25,9 +25,12 @@ class Review extends Model<reviewsTypes>{
 
 Review.init({
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.STRING,
+        // autoIncrement: true,
         primaryKey: true,
+        unique: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
     },
     rating: {
         type: DataTypes.FLOAT,
