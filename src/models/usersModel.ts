@@ -13,6 +13,7 @@ interface UserAttributes {
     location: string;
     role?: 'user' | 'admin';
     photo?: string;
+    googleId?:string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -29,6 +30,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
     public location!: string;
     public role!: 'user' | 'admin';
     public photo!: string;
+    public googleId!: string;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 }
@@ -79,6 +81,10 @@ User.init({
     },
     photo: {
         type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    googleId: {
+        type: DataTypes.STRING,
         allowNull: true,
     }
 }, {

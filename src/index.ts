@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit'
 import dotenv from 'dotenv';
 import compression from "compression"
+import session from "express-session"
+import passport from "passport"
 import { dbConnect, syncDB } from './config/db';
 import { errorHandler } from './middlewares/errorHandler';
 import { authRouter } from './routes/authRoutes';
@@ -18,6 +20,8 @@ import { reviewsRouter } from './routes/reviewsRoutes';
 import { app, server } from './chat/server';
 import { notificationRouter } from './routes/notificationRoutes';
 import { chatRouter } from './routes/chatRoutes';
+import { passwordRouter } from './routes/passwordRoutes';
+import { usePassportGoogle } from './middlewares/passportOuth';
 
 dotenv.config();
 
@@ -25,6 +29,7 @@ dotenv.config();
 dbConnect()
 syncDB()
 redisDB()
+usePassportGoogle()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,6 +47,14 @@ app.use(rateLimit({
     message: 'Too many requests from this IP, please try again later.'
 }));
 app.use(errorHandler)
+app.use(session({
+    secret: process.env.SESSION_SCRET_KEY as string,
+    resave: false,
+    saveUninitialized: false,
+}))
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(passport.authenticate("session"));
 
 
 app.use('/api/v1/auth', authRouter)
@@ -54,6 +67,7 @@ app.use('/api/v1/appointment', appointmentRouter)
 app.use('/api/v1/review', reviewsRouter)
 app.use('/api/v1/notification', notificationRouter)
 app.use('/api/v1/chat', chatRouter)
+app.use('/api/v1/password', passwordRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });
