@@ -146,6 +146,7 @@ export const getAppointmentDoctor = async(req: Request, res: Response) => {
 
 export const updateAppointment = async (req: Request, res: Response) => {
     try {
+        const userId = (req as any).user.id
         const appointment = await Appointment.findByPk(req.params.id);
         if (!appointment) {
             res.status(400).json({
@@ -156,9 +157,47 @@ export const updateAppointment = async (req: Request, res: Response) => {
             await appointment.update(req.body);
             await appointment.save();
             const user = await User.findByPk(appointment.userId);
-            const message = `The Doctor ${appointment.status} your appointment`;
-            await sendEmail(user?.email as string,message,user?.firstName as string,"appointment updated");
-            await sendNotification(message,appointment.userId);
+            const doctor:any = await Doctor.findByPk(appointment.doctorId,{include:[{model:User,as:"user"}]})
+            let message = ""
+            let subject = ""
+            if(appointment.status === "accepted" && userId !== appointment.userId){
+                message = `<p>Hi ${user?.firstName}, </p>
+                    <p>Great news! Your reservation request with Dr. ${doctor?.user?.firstName} has been accepted. 🐾 </p>
+                    <p>📅 Appointment Details: </p>
+                        <p>•	Date : ${appointment.time} </p>
+                        <p>•	Doctor: Dr. ${doctor?.user?.firstName} </p>
+                        <p>•	Case Description: “${appointment.description}” </p>
+                    <p>Please make sure to arrive a few minutes early and bring any relevant pet information or records. </p>
+                    <p>If you need to reschedule, you can do so from your profile in the app. </p>
+                    <p>Looking forward to seeing you and your furry friend soon! 🐶🐱 </p>
+                    <p>— The Paws&Claws Support Team`;
+                subject = " 🎉 Your Pet Appointment is Confirmed!"
+            }
+            else if(appointment.status === "cancelled" && userId !== appointment.userId){
+                message=`<p>Hi ${user?.firstName},</p>
+                    <p>We’re sorry to let you know that your recent reservation request with Dr. ${doctor?.user?.firstName} has been cancelled.</p>
+                    <p>This could be due to scheduling conflicts or availability issues.</p>
+                    <p>📝 Request Details:</p>
+                        <p>•Date Requested: ${appointment.time} </p>
+                    <p>•Case Description: ${appointment.description} </p>
+                    <p>You can try booking a different time or choose another available doctor from the app. </p>
+                    <p>We’re here to help make sure your pet gets the care they need. 💙</p>
+                    — The Paws&Claws Support Team`
+                subject = "😢 Your Reservation Request Couldn’t Be Accepted"
+            }
+            else if(appointment.userId === userId){
+                message = `<p>Hi ${user?.firstName}</p>,
+                    <p>We would like to confirm that your appointment with Dr. ${doctor?.user?.firstName}, originally scheduled for ${appointment.time}, has been successfully cancelled.</p>
+                    <p>If this was a mistake or you wish to reschedule, please feel free to book a new appointment at your convenience.</p>
+                    <p>Thank you for using our service.</p>
+                    <p>We hope to assist you again soon.</p>
+                    <p>Best regards</p>,
+                    <p>The Paws&Claws Support Team</p>
+                `
+                subject = "Appointment Cancellation Confirmation"
+            }
+            await sendEmail(user?.email as string,message,user?.firstName as string,subject);
+            await sendNotification("Your Pet Appointment is Updated!",appointment.userId);
             res.status(200).json({
                 status: "success",
                 data: appointment,

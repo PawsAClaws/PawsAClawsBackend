@@ -8,7 +8,13 @@ export const appointmentValidation = [
         .withMessage("time must be a date"),
     body("doctorId")
         .notEmpty()
-        .withMessage("doctorId is required")
+        .withMessage("doctorId is required"),
+    body("description")
+        .notEmpty()
+        .withMessage("description is required"),
+    body("animal")
+        .notEmpty()
+        .withMessage("animal is required"),
 ]
 
 export const updateAppointmentValidation = [

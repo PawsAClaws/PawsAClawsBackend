@@ -7,6 +7,8 @@ interface appointmentTypes{
     id?: number,
     time: Date,
     status: string,
+    description:string;
+    animal:string;
     doctorId: number,
     userId: number,
     createdAt?: Date,
@@ -17,6 +19,8 @@ class Appointment extends Model<appointmentTypes>{
     public readonly id!: number;
     public time!: Date;
     public status!: string;
+    public description!: string;
+    public animal!: string;
     public doctorId!: number;
     public userId!: number;
     public readonly createdAt!: Date;
@@ -37,6 +41,14 @@ Appointment.init({
         type: DataTypes.ENUM("pending", "accepted", "cancelled"),
         allowNull: false,
         defaultValue: "pending",
+    },
+    description:{
+        type:DataTypes.TEXT,
+        allowNull:true
+    },
+    animal:{
+        type:DataTypes.STRING,
+        allowNull:true
     },
     doctorId: {
         type: DataTypes.INTEGER,
