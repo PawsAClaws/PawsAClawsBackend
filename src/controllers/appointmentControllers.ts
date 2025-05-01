@@ -37,6 +37,7 @@ export const createAppointment = async (req: Request, res: Response) => {
                     where: {
                         doctorId: req.body.doctorId,
                         time: req.body.time,
+                        status: "accepted",
                     },
                 });
                 if(allAppointments.length >= doctor.numOfReservat){

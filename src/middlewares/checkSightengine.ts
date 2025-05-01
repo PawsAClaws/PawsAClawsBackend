@@ -6,7 +6,7 @@ export const checkSightengine = async(req: Request, res: Response, next: NextFun
             const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
             const data = new FormData();
             data.append('media', blob);
-            data.append('models', 'weapon,gore-2.0,violence');
+            data.append('models', 'nudity-2.1,weapon,gore-2.0,violence');
             data.append('api_user', process.env.SIGHT_USER as string);
             data.append('api_secret', process.env.SIGHT_SECRET as string);
 
@@ -16,12 +16,15 @@ export const checkSightengine = async(req: Request, res: Response, next: NextFun
             });
             const siData = await siRes.json();
 
+            // console.log(siData);
+
             if(siData.gore.prob >= 0.8 || siData.violence.prob >= 0.8 
                 || siData.weapon.classes.firearm >= 0.8 || siData.weapon.classes.knife >= 0.8
+                || siData.nudity.mildly_suggestive >= 0.8
             ){
                 res.status(400).json({
                     status: "bad request",
-                    message: "this image contains inappropriate content",
+                    message: "this image contains inappropriate content"
                 });
             }
             else{
