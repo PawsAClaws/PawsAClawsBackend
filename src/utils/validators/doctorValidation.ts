@@ -17,10 +17,10 @@ export const doctorValidation = [
         .isInt({ min: 0 }).withMessage('numOfReservat must be a positive number'),
     body('daysWork')
         .notEmpty().withMessage('daysWork is required')
-        .isArray({ min: 1 }).withMessage('daysWork must be an array')
-        .custom(value => {
+        // .isArray({ min: 1 }).withMessage('daysWork must be an array')
+        .custom((value:string) => {
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            value.forEach(day => {
+            value.split(',').forEach(day => {
                 if (!days.includes(day)) {
                     throw new Error('Invalid day of the week');
                 }
@@ -33,4 +33,5 @@ export const doctorValidation = [
     body('endTimeWork')
         .notEmpty().withMessage('endTimeWork is required')
         .matches(time12HourRegex).withMessage('startTimeWork must be a valid 12-hour time (e.g. 8:00 PM)'),
+    body('card').notEmpty().withMessage('card is required')
 ];

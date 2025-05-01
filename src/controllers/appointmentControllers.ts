@@ -9,7 +9,12 @@ import { sendEmail } from "../utils/sendEmail";
 
 export const createAppointment = async (req: Request, res: Response) => {
     try {
-        const doctor = await Doctor.findByPk(req.body.doctorId);
+        const doctor = await Doctor.findOne({
+            where: {
+                id: req.body.doctorId,
+                active: true
+            },
+        });
         if (!doctor) {
             res.status(400).json({
                 status: "bad request",

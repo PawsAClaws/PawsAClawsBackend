@@ -13,6 +13,8 @@ interface DoctorAttributes {
     daysWork: string[];
     startTimeWork: string;
     endTimeWork: string;
+    card: string;
+    active?: boolean;
     userId: number;
     createdAt?: Date;
     updatedAt?: Date;
@@ -29,6 +31,8 @@ class Doctor extends Model<DoctorAttributes> implements DoctorAttributes {
     public daysWork!: string[];
     public startTimeWork!: string;
     public endTimeWork!: string;
+    public card!: string;
+    public active!: boolean;
     public userId!: number;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -76,6 +80,15 @@ Doctor.init({
     endTimeWork: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    card: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
     },
     userId: {
         type: DataTypes.INTEGER,

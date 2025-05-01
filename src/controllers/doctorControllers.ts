@@ -25,6 +25,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
             const {count,rows} = await Doctor.findAndCountAll({
                 include:[{model:User,attributes:{exclude:["password"]},as:"user"}],
                 where: {
+                    active: true,
                     [Op.or]: [
                         {
                             bio: {
@@ -77,7 +78,8 @@ export const getDoctorUser = async (req: Request, res: Response) => {
     try {
         const doctor = await Doctor.findOne({
             where: {
-                userId: (req as any).user.id
+                userId: (req as any).user.id,
+                active: true
             }
         });
         if (!doctor) {
@@ -145,7 +147,7 @@ export const createDoctor = async (req: Request, res: Response) => {
             });
         }
         else{
-            const { bio, address, price, experience, speciality, numOfReservat, daysWork, startTimeWork, endTimeWork } = req.body;
+            const { bio, address, price, experience, speciality, numOfReservat, daysWork, startTimeWork, endTimeWork, card } = req.body;
             const doctor = await Doctor.create({
                 bio,
                 address,
@@ -153,9 +155,10 @@ export const createDoctor = async (req: Request, res: Response) => {
                 experience,
                 speciality,
                 numOfReservat,
-                daysWork,
+                daysWork: daysWork.split(','),
                 startTimeWork,
                 endTimeWork,
+                card,
                 userId:(req as any).user.id
             });
             await doctor.save();
@@ -210,6 +213,31 @@ export const deleteDoctor = async (req: Request, res: Response) => {
             res.status(200).json({
                 status: "success",
                 message: "doctor deleted successfully",
+            });
+        }
+    } catch (error: any) {
+        res.status(404).json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
+
+export const activeDoctor = async (req: Request, res: Response) => {
+    try {
+        const { active } = req.body;
+        const doctor = await Doctor.findByPk(req.params.id);
+        if (!doctor) {
+            res.status(400).json({
+                status: "bad request",
+                message: "doctor not found",
+            });
+        } else {
+            await doctor.update({active});
+            await doctor.save();
+            res.status(200).json({
+                status: "success",
+                message: `doctor activated ${active}`,
             });
         }
     } catch (error: any) {
