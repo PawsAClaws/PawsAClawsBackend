@@ -8,13 +8,14 @@ import { redisClient } from "../config/redisClient";
 export const getPosts = async(req:Request, res:Response) => {
     try {
         const location = req.query.location || "";
+        const city = req.query.city || "";
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
         const q = (req.query.q)?.toString() || "";
         const type = (req.query.type)?.toString() || "sale";
         const sortBy = (req.query.sortBy)?.toString() || "DESC";
-        const key = `${location}:${type}:${q}:${page}:${limit}:${sortBy}`;
+        const key = `${location}:${city}:${type}:${q}:${page}:${limit}:${sortBy}`;
         const cache = await redisClient.get(key);
         if (cache) {
             // console.log("cache");
@@ -26,9 +27,13 @@ export const getPosts = async(req:Request, res:Response) => {
         else{
             const {count,rows} = await Post.findAndCountAll({
                 where: {
+                    live: true,
                     type: type,
                     country: {
                         [Op.like]: `%${location}%`,
+                    },
+                    city: {
+                        [Op.like]: `%${city}%`,
                     },
                     [Op.or]: [
                         {

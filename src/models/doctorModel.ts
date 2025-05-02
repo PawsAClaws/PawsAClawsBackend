@@ -4,6 +4,7 @@ import User from "./usersModel";
 
 interface DoctorAttributes {
     id?: number;
+    realName: string;
     bio: string;
     address: string;
     price: number;
@@ -22,6 +23,7 @@ interface DoctorAttributes {
 
 class Doctor extends Model<DoctorAttributes> implements DoctorAttributes {
     public readonly id!: number;
+    public realName!: string;
     public bio!: string;
     public address!: string;
     public price!: number;
@@ -43,6 +45,10 @@ Doctor.init({
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
+    },
+    realName: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
     bio: {
         type: DataTypes.TEXT,

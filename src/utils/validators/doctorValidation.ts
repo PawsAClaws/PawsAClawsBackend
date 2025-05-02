@@ -3,6 +3,7 @@ import { body } from "express-validator";
 const time12HourRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$/;
 
 export const doctorValidation = [
+    body('realName').notEmpty().withMessage('realName is required'),
     body('bio').notEmpty().withMessage('bio is required'),
     body('address').notEmpty().withMessage('address is required'),
     body('price')

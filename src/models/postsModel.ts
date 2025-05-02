@@ -15,6 +15,8 @@ interface postsModel {
     country: string;
     city: string;
     photo: string;
+    negotiable: boolean;
+    live?: boolean;
     categoryId: number;
     userId: number;
     createdAt?: Date;
@@ -33,6 +35,8 @@ class Post extends Model<postsModel> implements postsModel {
     public country!: string;
     public city!: string;
     public photo!: string;
+    public negotiable!: boolean;
+    public live!: boolean;
     public categoryId!: number;
     public userId!: number;
     public readonly createdAt!: Date;
@@ -85,6 +89,16 @@ Post.init(
     photo: {
         type: DataTypes.TEXT,
         allowNull: false,
+    },
+    negotiable: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    live: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
     },
     categoryId: {
         type: DataTypes.INTEGER,

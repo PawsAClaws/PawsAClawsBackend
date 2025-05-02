@@ -43,5 +43,8 @@ export const postValidation = [
         .withMessage("photo is required"),
     body("categoryId")
         .notEmpty()
-        .withMessage("categoryId is required")
+        .withMessage("categoryId is required"),
+    body("negotiable")
+        .notEmpty()
+        .withMessage("negotiable is required")
 ]

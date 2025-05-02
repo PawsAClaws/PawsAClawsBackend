@@ -147,8 +147,9 @@ export const createDoctor = async (req: Request, res: Response) => {
             });
         }
         else{
-            const { bio, address, price, experience, speciality, numOfReservat, daysWork, startTimeWork, endTimeWork, card } = req.body;
+            const {realName, bio, address, price, experience, speciality, numOfReservat, daysWork, startTimeWork, endTimeWork, card } = req.body;
             const doctor = await Doctor.create({
+                realName,
                 bio,
                 address,
                 price,

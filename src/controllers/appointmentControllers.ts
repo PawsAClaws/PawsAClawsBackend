@@ -163,15 +163,15 @@ export const updateAppointment = async (req: Request, res: Response) => {
             await appointment.update(req.body);
             await appointment.save();
             const user = await User.findByPk(appointment.userId);
-            const doctor:any = await Doctor.findByPk(appointment.doctorId,{include:[{model:User,as:"user"}]})
+            const doctor = await Doctor.findByPk(appointment.doctorId)
             let message = ""
             let subject = ""
             if(appointment.status === "accepted" && userId !== appointment.userId){
                 message = `<p>Hi ${user?.firstName}, </p>
-                    <p>Great news! Your reservation request with Dr. ${doctor?.user?.firstName} has been accepted. 🐾 </p>
+                    <p>Great news! Your reservation request with Dr. ${doctor?.realName} has been accepted. 🐾 </p>
                     <p>📅 Appointment Details: </p>
                         <p>•	Date : ${appointment.time} </p>
-                        <p>•	Doctor: Dr. ${doctor?.user?.firstName} </p>
+                        <p>•	Doctor: Dr. ${doctor?.realName} </p>
                         <p>•	Case Description: “${appointment.description}” </p>
                     <p>Please make sure to arrive a few minutes early and bring any relevant pet information or records. </p>
                     <p>If you need to reschedule, you can do so from your profile in the app. </p>
@@ -181,7 +181,7 @@ export const updateAppointment = async (req: Request, res: Response) => {
             }
             else if(appointment.status === "cancelled" && userId !== appointment.userId){
                 message=`<p>Hi ${user?.firstName},</p>
-                    <p>We’re sorry to let you know that your recent reservation request with Dr. ${doctor?.user?.firstName} has been cancelled.</p>
+                    <p>We’re sorry to let you know that your recent reservation request with Dr. ${doctor?.realName} has been cancelled.</p>
                     <p>This could be due to scheduling conflicts or availability issues.</p>
                     <p>📝 Request Details:</p>
                         <p>•Date Requested: ${appointment.time} </p>
@@ -193,7 +193,7 @@ export const updateAppointment = async (req: Request, res: Response) => {
             }
             else if(appointment.userId === userId){
                 message = `<p>Hi ${user?.firstName}</p>,
-                    <p>We would like to confirm that your appointment with Dr. ${doctor?.user?.firstName}, originally scheduled for ${appointment.time}, has been successfully cancelled.</p>
+                    <p>We would like to confirm that your appointment with Dr. ${doctor?.realName}, originally scheduled for ${appointment.time}, has been successfully cancelled.</p>
                     <p>If this was a mistake or you wish to reschedule, please feel free to book a new appointment at your convenience.</p>
                     <p>Thank you for using our service.</p>
                     <p>We hope to assist you again soon.</p>
