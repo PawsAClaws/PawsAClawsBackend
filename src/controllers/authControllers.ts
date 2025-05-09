@@ -98,6 +98,7 @@ export const loginGoogle = async(req:Request, res:Response) => {
                 phone: "",
                 location: "",
                 photo:user.picture,
+                verify: false,
                 googleId: user.id
             })
             await newUser.save()

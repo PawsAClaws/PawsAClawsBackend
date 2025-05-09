@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Notification from "../models/notificationModel";
+import { Op } from "sequelize";
 
 export const  getNotifications = async (req: Request, res: Response) => {
     try {
@@ -32,5 +33,24 @@ export const readNotifction = async (req: Request, res: Response) => {
             status: "error",
             message: error.message,
         });
+    }
+};
+
+export const deleteOldNotifications = async () => {
+    try {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+        const deletedCount = await Notification.destroy({
+            where: {
+                createdAt: {
+                    [Op.lt]: oneWeekAgo,
+                },
+            },
+        });
+    
+        console.log(`${deletedCount} notification(s) deleted.`);
+    } catch (error: any) {
+        console.error('Error deleting old notifications:', error.message);
     }
 };

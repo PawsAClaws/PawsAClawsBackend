@@ -7,8 +7,8 @@ interface notificationType {
     message: string;
     isReead?: boolean;
     userId: number;
-    createAt?: Date;
-    updateAt?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 class Notification extends Model<notificationType> implements notificationType {
@@ -16,8 +16,8 @@ class Notification extends Model<notificationType> implements notificationType {
     public message!: string;
     public isReead!: boolean;
     public userId!: number;
-    public readonly createAt!: Date;
-    public readonly updateAt!: Date;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
 Notification.init({

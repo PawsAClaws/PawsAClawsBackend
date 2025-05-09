@@ -10,8 +10,8 @@ interface messagesType {
     seen?: boolean;
     sendBy: number;
     conversationId: number;
-    createAt?: Date;
-    updateAt?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 class Message extends Model<messagesType> implements messagesType {
@@ -20,8 +20,8 @@ class Message extends Model<messagesType> implements messagesType {
     public media!: string;
     public sendBy!: number;
     public conversationId!: number;
-    public readonly createAt!: Date;
-    public readonly updateAt!: Date;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
 Message.init({

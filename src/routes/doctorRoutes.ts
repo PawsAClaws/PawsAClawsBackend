@@ -5,12 +5,14 @@ import { errorValidation } from '../utils/validators/errorValidation';
 import { doctorValidation } from '../utils/validators/doctorValidation';
 import { upload, uploadFile } from '../middlewares/uploadFile';
 import { allowToProcess } from '../middlewares/allowToProcess';
+import { verifyUser } from '../middlewares/verifyUser';
 
 export const doctorRouter = express.Router();
 
 doctorRouter.route('/')
 .get(getAllDoctors)
 .post(verifyToken,
+    verifyUser,
     upload.single('card'),
     uploadFile,
     doctorValidation,
@@ -18,11 +20,11 @@ doctorRouter.route('/')
 createDoctor);
 
 doctorRouter.route('/mine')
-.get(verifyToken,getDoctorUser);
+.get(verifyToken,verifyUser,getDoctorUser);
 
-doctorRouter.post('/active/:id',verifyToken,allowToProcess('admin'),activeDoctor)
+doctorRouter.post('/active/:id',verifyToken,verifyUser,allowToProcess('admin'),activeDoctor)
 
 doctorRouter.route('/:id')
-.get(verifyToken,getDoctorById)
-.put(verifyToken,updateDoctor)
-.delete(verifyToken,deleteDoctor);
+.get(verifyToken,verifyUser,getDoctorById)
+.put(verifyToken,verifyUser,updateDoctor)
+.delete(verifyToken,verifyUser,deleteDoctor);

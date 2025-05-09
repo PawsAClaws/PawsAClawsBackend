@@ -22,6 +22,7 @@ import { notificationRouter } from './routes/notificationRoutes';
 import { chatRouter } from './routes/chatRoutes';
 import { passwordRouter } from './routes/passwordRoutes';
 import { usePassportGoogle } from './middlewares/passportOuth';
+import { deleteOldNotifications } from './controllers/notificationControllers';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ dbConnect()
 syncDB()
 redisDB()
 usePassportGoogle()
+setInterval(deleteOldNotifications, 24 * 60 * 60 * 1000);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

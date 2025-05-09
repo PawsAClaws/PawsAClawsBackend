@@ -6,16 +6,16 @@ interface conversationType {
     id?: number;
     senderId: number;
     receiverId: number;
-    createAt?: Date;
-    updateAt?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 class Conversation extends Model<conversationType> implements conversationType {
     public readonly id!: number;
     public senderId!: number;
     public receiverId!: number;
-    public readonly createAt!: Date;
-    public readonly updateAt!: Date;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 }
 
 Conversation.init(
