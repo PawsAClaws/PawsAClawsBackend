@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import Appointment from "../models/appointmentsModel";
 import Doctor from "../models/doctorModel";
-import { redisClient } from "../config/redisClient";
 import { pagination } from "../middlewares/pagination";
 import User from "../models/usersModel";
 import { sendNotification } from "../helpers/sendNotification";
@@ -71,35 +70,24 @@ export const getAppointmentUser = async (req: Request, res: Response) => {
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
-        const key = `${offset}:${limit}:${page}:user`;
-        const cach = await redisClient.get(key);
-        if (cach) {
-            res.status(200).json({
-                status: "success",
-                data: JSON.parse(cach),
-            });
-        } else {
-            const {count,rows} = await Appointment.findAndCountAll({
-                where: {
-                    userId: (req as any).user.id,
-                },
-                include: [{model: Doctor,as:"doctor"}],
-                limit: +limit,
-                offset: offset,
-            });
-            const pagin = pagination(+limit,+page,count);
-            const data = {
-                appointments: rows,
-                pagination: pagin
-            };
-            await redisClient.set(key, JSON.stringify(data),{
-                EX:180
-            });
-            res.status(200).json({
-                status: "success",
-                data: data,
-            });
-        }
+        const {count,rows} = await Appointment.findAndCountAll({
+            where: {
+                userId: (req as any).user.id,
+            },
+            include: [{model: Doctor,as:"doctor"}],
+            limit: +limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']],
+        });
+        const pagin = pagination(+limit,+page,count);
+        const data = {
+            appointments: rows,
+            pagination: pagin
+        };
+        res.status(200).json({
+            status: "success",
+            data: data,
+        });
     } catch (error: any) {
         res.status(404).json({
             status: "error",
@@ -113,35 +101,24 @@ export const getAppointmentDoctor = async(req: Request, res: Response) => {
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
-        const key = `${page}:${limit}:${offset}:doctor`;
-        const cach = await redisClient.get(key);
-        if (cach) {
-            res.status(200).json({
-                status: "success",
-                data: JSON.parse(cach),
-            });
-        } else {
-            const {count,rows} = await Appointment.findAndCountAll({
-                where: {
-                    doctorId: req.params.id,
-                },
-                include: [{model: User,attributes:{exclude:["password"]},as:"user"}],
-                limit: +limit,
-                offset: offset,
-            });
-            const pagin = pagination(+limit,+page,count);
-            const data = {
-                appointments: rows,
-                pagination: pagin
-            };
-            await redisClient.set(key, JSON.stringify(data),{
-                EX:180
-            });
-            res.status(200).json({
-                status: "success",
-                data: data,
-            });
-        }
+        const {count,rows} = await Appointment.findAndCountAll({
+            where: {
+                doctorId: req.params.id,
+            },
+            include: [{model: User,attributes:{exclude:["password"]},as:"user"}],
+            limit: +limit,
+            offset: offset,
+            order: [["createdAt", "DESC"]]
+        });
+        const pagin = pagination(+limit,+page,count);
+        const data = {
+            appointments: rows,
+            pagination: pagin
+        };
+        res.status(200).json({
+            status: "success",
+            data: data,
+        });
     } catch (error: any) {
         res.status(404).json({
             status: "error",
