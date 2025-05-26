@@ -16,7 +16,7 @@ export const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.FRONTEND_URL || "http://localhost:5173",
+        origin: process.env.FRONTEND_URL as string || "http://localhost:5173",
         methods: ["GET", "POST","PUT", "DELETE"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
@@ -28,6 +28,7 @@ const onlineUsers = new Set();
 io.on("connection", async(socket) => {
     const token =  socket.handshake.headers.authorization?.split(" ")[1];
     const user = await getUserByToken(token as string);
+    console.log(user)
     onlineUsers.add(user.id);
     console.log("connect user => "+ user.id);
     // online users
