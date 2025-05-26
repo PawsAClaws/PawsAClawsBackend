@@ -26,9 +26,11 @@ const io = new Server(server, {
 const onlineUsers = new Set();
 
 io.on("connection", async(socket) => {
-    const token =  socket.handshake.headers.authorization?.split(" ")[1];
+    const token =  socket.handshake.auth.token.split(" ")[1];
+    // console.log(socket.handshake.auth)
     const user = await getUserByToken(token as string);
-    console.log(user)
+    // console.log(user)
+    socket.join(user.id)
     onlineUsers.add(user.id);
     console.log("connect user => "+ user.id);
     // online users
