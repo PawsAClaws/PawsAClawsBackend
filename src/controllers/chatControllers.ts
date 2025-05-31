@@ -52,7 +52,8 @@ export const getMessages = async(req: Request, res: Response) =>{
                         exclude:["password"]
                     }
                 }
-            ]
+            ],
+            order:[["createdAt","ASC"]]
         })
         res.status(200).json({status:"success",data:messages})
     } catch (error:any) {

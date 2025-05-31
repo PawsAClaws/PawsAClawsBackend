@@ -14,6 +14,7 @@ interface UserAttributes {
     role?: 'user' | 'admin';
     photo?: string;
     verify?: boolean;
+    blocked?: boolean;
     googleId?:string;
     createdAt?: Date;
     updatedAt?: Date;
@@ -32,6 +33,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
     public role!: 'user' | 'admin';
     public photo!: string;
     public verify!: boolean;
+    public blocked!: boolean;
     public googleId!: string;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -89,6 +91,11 @@ User.init({
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
+    },
+    blocked: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
     },
     googleId: {
         type: DataTypes.STRING,

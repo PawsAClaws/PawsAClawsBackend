@@ -18,3 +18,11 @@ export const verifyAccountValidation = [
         .notEmpty()
         .withMessage("Location is required"),
 ];
+
+export const blockUserValidation = [
+    body("blocked")
+        .notEmpty()
+        .withMessage("blocked is required")
+        .isIn([true, false])
+        .withMessage("Invalid blocked format (true or false)"),
+];

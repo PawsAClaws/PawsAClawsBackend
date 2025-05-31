@@ -5,6 +5,7 @@ import { pagination } from "../middlewares/pagination";
 import User from "../models/usersModel";
 import { sendNotification } from "../helpers/sendNotification";
 import { sendEmail } from "../utils/sendEmail";
+import { Op } from "sequelize";
 
 export const createAppointment = async (req: Request, res: Response) => {
     try {
@@ -101,10 +102,17 @@ export const getAppointmentDoctor = async(req: Request, res: Response) => {
         const limit = req.query.limit || 10;
         const page = req.query.page || 1;
         const offset = (+page - 1) * +limit;
+        let where: {[key: string]: any} = {
+            doctorId: req.params.id
+        }
+        req.query.status ? where= {...where,status: req.query.status as string} : null;
+        if(req.query.date){
+            const date = new Date(req.query.date as string);
+            where = {...where,createdAt : { [Op.gte]: date, [Op.lt]: new Date(date.getTime() + 24 * 60 * 60 * 1000) }}
+        }
+
         const {count,rows} = await Appointment.findAndCountAll({
-            where: {
-                doctorId: req.params.id,
-            },
+            where,
             include: [{model: User,attributes:{exclude:["password"]},as:"user"}],
             limit: +limit,
             offset: offset,

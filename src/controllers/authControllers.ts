@@ -14,6 +14,12 @@ export const login = async(req:Request, res:Response) => {
                 message: "user not found"
             })
         }
+        else if(user.blocked === true){
+            res.status(400).json({
+                status: "bad request",
+                message: "user is blocked"
+            })
+        }
         else {
             const isMatch = await bcrypt.compare(password, user.password)
             if(!isMatch){
@@ -82,8 +88,16 @@ export const loginGoogle = async(req:Request, res:Response) => {
         const user = (req as any).user
         const oldUser = await User.findOne({where:{email:user.email}})
         if(oldUser){
-            const token = generateToken(oldUser, "1d")
-            res.redirect(`${process.env.FRONTEND_URL as string}/login?token=${token}`)
+            if(oldUser.blocked === true){
+                res.status(400).json({
+                    status: "bad request",
+                    message: "user is blocked"
+                })
+            }
+            else{
+                const token = generateToken(oldUser, "1d")
+                res.redirect(`${process.env.FRONTEND_URL as string}/login?token=${token}`)
+            }
         }
         else{
             const password = crypto.randomBytes(10).toString("hex")
