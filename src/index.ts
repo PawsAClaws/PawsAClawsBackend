@@ -23,6 +23,7 @@ import { chatRouter } from './routes/chatRoutes';
 import { passwordRouter } from './routes/passwordRoutes';
 import { usePassportGoogle } from './middlewares/passportOuth';
 import { deleteOldNotifications } from './controllers/notificationControllers';
+import { reportsRouter } from './routes/reportsRoutes';
 
 dotenv.config();
 
@@ -70,6 +71,7 @@ app.use('/api/v1/review', reviewsRouter)
 app.use('/api/v1/notification', notificationRouter)
 app.use('/api/v1/chat', chatRouter)
 app.use('/api/v1/password', passwordRouter)
+app.use('/api/v1/report', reportsRouter)
 
 app.use((req, res) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });

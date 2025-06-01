@@ -38,7 +38,7 @@ io.on("connection", async(socket) => {
 
     socket.on("newMessage",async(data)=>{
         try {
-            const conversation = await Conversation.findOne({
+            let conversation = await Conversation.findOne({
                 where:{
                     senderId:{
                         [Op.or]:[data.senderId,data.receiverId]
@@ -48,33 +48,22 @@ io.on("connection", async(socket) => {
                     }
                 }
             })
-            if(conversation){
-                const message = await Message.create({
-                    message:data.message,
-                    media:data.media || null,
-                    sendBy:data.senderId,
-                    conversationId:conversation.id
-                })
-                await message.save();
-                io.to(data.senderId).emit("newMessage",message);
-                io.to(data.receiverId).emit("newMessage",message);
-            }
-            else{
-                const conversation = await Conversation.create({
+            if(!conversation){
+                conversation = await Conversation.create({
                     senderId:data.senderId,
                     receiverId:data.receiverId
                 })
                 await conversation.save();
-                const message = await Message.create({
-                    message:data.message,
-                    media:data.media || null,
-                    sendBy:data.senderId,
-                    conversationId:conversation.id
-                })
-                await message.save();
-                io.to(data.senderId).emit("newMessage",message);
-                io.to(data.receiverId).emit("newMessage",message);
             }
+            const message = await Message.create({
+                message:data.message,
+                media:data.media || null,
+                sendBy:data.senderId,
+                conversationId:conversation.id
+            })
+            await message.save();
+            io.to(data.senderId).emit("newMessage",message);
+            io.to(data.receiverId).emit("newMessage",message);
             const notification = `${user.name} sent you a message`;
             await sendNotification(notification,data.receiverId);
         } catch (error: any) {
