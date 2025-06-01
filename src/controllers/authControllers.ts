@@ -58,8 +58,10 @@ export const register = async(req:Request, res:Response) => {
             })
         }
         else{
+            const username = `${firstName}.${crypto.randomBytes(2).toString("hex")}`
             const hashedPassword = await bcrypt.hash(password, 10)
             const newUser = await User.create({
+                username,
                 firstName,
                 lastName,
                 email,
@@ -101,8 +103,10 @@ export const loginGoogle = async(req:Request, res:Response) => {
         }
         else{
             const password = crypto.randomBytes(10).toString("hex")
+            const username = `${user.displayName}.${crypto.randomBytes(2).toString("hex")}`
             const hashedPassword = await bcrypt.hash(password, 10)
             const newUser = await User.create({
+                username,
                 firstName: user.displayName,
                 lastName: user.displayName,
                 email: user.email,
