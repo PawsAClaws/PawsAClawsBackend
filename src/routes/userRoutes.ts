@@ -1,6 +1,6 @@
 import express from "express";
 import { verifyToken } from "../middlewares/verifyToken";
-import { blockUser, deleteAccount, deleteUser, getUser, getUserById, updateUser, verifyMyUser } from "../controllers/userControllers";
+import { blockUser, deleteAccount, deleteUser, getAllUsers, getUser, getUserById, updateUser, verifyMyUser } from "../controllers/userControllers";
 import { upload, uploadFile } from "../middlewares/uploadFile";
 import { verifyUser } from "../middlewares/verifyUser";
 import { blockUserValidation, verifyAccountValidation } from "../utils/validators/verifyAccountValidation";
@@ -8,6 +8,8 @@ import { errorValidation } from "../utils/validators/errorValidation";
 import { allowToProcess } from "../middlewares/allowToProcess";
 
 export const userRouter = express.Router();
+
+userRouter.get("/all",verifyToken,verifyUser,getAllUsers)
 
 userRouter.route('/')
 .get(verifyToken,getUser)
