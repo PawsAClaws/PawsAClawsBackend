@@ -39,23 +39,37 @@ export const getConversations = async(req: Request, res: Response) =>{
 
 export const getMessages = async(req: Request, res: Response) =>{
     try {
-        const conversationId = req.params.id;
-        const messages = await Message.findAll({
+        const recevierId = req.params.id;
+        const userId = (req as any).user.id;
+        const conversation = await Conversation.findOne({
             where:{
-                conversationId:conversationId
-            },
-            include:[
-                {
-                    model:User,
-                    as:"send",
-                    attributes:{
-                        exclude:["password"]
-                    }
-                }
-            ],
-            order:[["createdAt","ASC"]]
+                [Op.or]:[
+                    {senderId:userId,receiverId:recevierId},
+                    {senderId:recevierId,receiverId:userId}
+                ]
+            }
         })
-        res.status(200).json({status:"success",data:messages})
+        if(!conversation){
+            res.status(200).json({status:"success",data:[]})
+        }
+        else{
+            const messages = await Message.findAll({
+                where:{
+                    conversationId:conversation.id
+                },
+                include:[
+                    {
+                        model:User,
+                        as:"send",
+                        attributes:{
+                            exclude:["password"]
+                        }
+                    }
+                ],
+                order:[["createdAt","ASC"]]
+            })
+            res.status(200).json({status:"success",data:messages})
+        }
     } catch (error:any) {
         res.status(404).json({status:"error",message:error.message})
     }
