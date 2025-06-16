@@ -98,7 +98,7 @@ export const loginGoogle = async(req:Request, res:Response) => {
             }
             else{
                 const token = generateToken(oldUser, "1d")
-                res.redirect(`${process.env.FRONTEND_URL as string}/login?token=${token}`)
+                res.redirect(`${process.env.FRONTEND_URL as string}/#/login?token=${token}`)
             }
         }
         else{
@@ -121,7 +121,7 @@ export const loginGoogle = async(req:Request, res:Response) => {
             })
             await newUser.save()
             const token = generateToken(newUser, "1d")
-            res.redirect(`${process.env.FRONTEND_URL as string}/login?token=${token}`)
+            res.redirect(`${process.env.FRONTEND_URL as string}/#/login?token=${token}`)
         }
     } catch (error:any) {
         res.status(404).json({
