@@ -16,7 +16,7 @@ export const server = createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: process.env.FRONTEND_URL as string || "http://localhost:5173",
+        origin: [ process.env.FRONTEND_URL as string , "http://localhost:5173"],
         methods: ["GET", "POST","PUT", "DELETE"],
         credentials: true,
         allowedHeaders: ["Content-Type", "Authorization"],
