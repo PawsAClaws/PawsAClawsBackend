@@ -24,8 +24,9 @@ import { passwordRouter } from './routes/passwordRoutes';
 import { usePassportGoogle } from './middlewares/passportOuth';
 import { deleteOldNotifications } from './controllers/notificationControllers';
 import { reportsRouter } from './routes/reportsRoutes';
-
+import 'dotenv/config';
 dotenv.config();
+
 
 // const app = express();
 dbConnect()
