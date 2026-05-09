@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit'
@@ -73,7 +73,7 @@ app.use('/api/v1/chat', chatRouter)
 app.use('/api/v1/password', passwordRouter)
 app.use('/api/v1/report', reportsRouter)
 
-app.use((req, res) => {
+app.use((req, res: Response) => {
     res.status(404).json({ status: "error", message: "this resource is not found" });
 });
 
