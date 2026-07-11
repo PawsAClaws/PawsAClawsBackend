@@ -50,7 +50,7 @@ export const getAllUsers = async(req: Request, res: Response)=>{
                 offset: offset,
             });
             const pagin = pagination(+limit, +page, users.count);
-            await redisClient.set(key, JSON.stringify({posts: users.rows, pagination: pagin}), {
+            await redisClient.set(key, JSON.stringify({users: users.rows, pagination: pagin}), {
                 EX: 180,
             });
             res.status(200).json({
